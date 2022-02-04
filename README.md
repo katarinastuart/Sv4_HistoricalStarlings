@@ -20,7 +20,12 @@ Variant calling falls into a few primary steps:
 <li>Calling the variant SNPs for each sample based on the mapped reads</li>
 <li>Filtering the called SNPs</li>
 
+
 For the first two steps of the process, you can mix and match mapping and variant calling programs.
+
+https://github.com/lh3/bwa#type
+
+Illumina single-end reads shorter than ~70bp:
 
 <h3>Data cleaning: Stacks </h3>
 
@@ -46,7 +51,7 @@ Count reads:
 zcat *.fq.gz | echo $((`wc -l`/4))
 </code></pre>
 
-<h3>BWA (mapping)</h3>
+<h2>BWA (mapping) using aln and mem</h2>
 
 Place your genome somewhere sensible and index it for BWA
 
@@ -55,6 +60,7 @@ genome_fa=Sturnus_vulgaris_2.3.1.simp.fasta
 bwa index -p bwa/stuv $genome_fa &> bwa/bwa_index.oe
 </code></pre>
 
+<h3>Aligning with bwa mem</h3>
 Aligning with bwa mem:
 <pre class="r"><code>
 for i in cat sample_names.txt;
@@ -75,99 +81,20 @@ samtools flagstat SAMPLENAME.bam
 
 pic of mapping data
 
-Calling variants with gstacks:
+<h3>Aligning with bwa aln</h3>
 
-<pre class="r"><code>
-gstacks -I ./ -M ../historic_populations.txt -O ./
-populations -P ./ -M ../historic_populations.txt --vcf
-</code></pre>
-
-Removed 0 loci that did not pass sample/population constraints from 412079 loci.
-Kept 412079 loci, composed of 28225204 sites; 20 of those sites were filtered, 243589 variant sites remained.
-    27345713 genomic sites, of which 846899 were covered by multiple loci (3.1%).
-Mean genotyped sites per locus: 68.47bp (stderr 0.00).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 11.272 samples per locus; pi: 0.17294; all/variant/polymorphic sites: 15515519/232371/142127; private alleles: 24046
-  hist: 4.8985 samples per locus; pi: 0.12483; all/variant/polymorphic sites: 18008520/91625/34830; private alleles: 13284
-  mv: 11.015 samples per locus; pi: 0.14832; all/variant/polymorphic sites: 19889591/226170/98305; private alleles: 4740
-  mw: 11.146 samples per locus; pi: 0.16776; all/variant/polymorphic sites: 15527851/232281/128802; private alleles: 13279
-  nc: 11.442 samples per locus; pi: 0.17365; all/variant/polymorphic sites: 15591084/235304/135530; private alleles: 16176
-  or: 11.45 samples per locus; pi: 0.16313; all/variant/polymorphic sites: 14915003/232899/117912; private alleles: 7942
-
- 
-
-Calling SNPS with filtering:
-Strict filtering:
-
-populations -P ./ -M ../historic_populations.txt --vcf -r 0.50 --min_maf 0.01 --write_random_snp -t 8
-Removed 271920 loci that did not pass sample/population constraints from 416460 loci.
-Kept 144540 loci, composed of 10087650 sites; 67754 of those sites were filtered, 77412 variant sites remained.
-    9994834 genomic sites, of which 91970 were covered by multiple loci (0.9%).
-Mean genotyped sites per locus: 69.79bp (stderr 0.01).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 13.444 samples per locus; pi: 0.15815; all/variant/polymorphic sites: 9110939/68361/47379; private alleles: 3605
-  hist: 8.0858 samples per locus; pi: 0.15427; all/variant/polymorphic sites: 7780598/14725/8706; private alleles: 1541
-  mv: 13.407 samples per locus; pi: 0.14296; all/variant/polymorphic sites: 7740125/63240/34156; private alleles: 1022
-  mw: 13.325 samples per locus; pi: 0.15843; all/variant/polymorphic sites: 8904808/67473/44953; private alleles: 2671
-  nc: 13.392 samples per locus; pi: 0.16369; all/variant/polymorphic sites: 8775160/71236/48457; private alleles: 3798
-  or: 13.452 samples per locus; pi: 0.15581; all/variant/polymorphic sites: 8641133/69988/42823; private alleles: 2169 
-
-lenient filtering:
-
-populations -P ./ -M ../historic_populations.txt --vcf --min_maf 0.01 --write_random_snp -t 8
-Removed 0 loci that did not pass sample/population constraints from 416460 loci.
-Kept 416460 loci, composed of 28517922 sites; 42232 of those sites were filtered, 109260 variant sites remained.
-    27621426 genomic sites, of which 862808 were covered by multiple loci (3.1%).
-Mean genotyped sites per locus: 68.46bp (stderr 0.00).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 10.178 samples per locus; pi: 0.20525; all/variant/polymorphic sites: 15518001/101327/65371; private alleles: 5356
-  hist: 4.4469 samples per locus; pi: 0.16671; all/variant/polymorphic sites: 18101356/35776/14624; private alleles: 3257
-  mv: 9.9247 samples per locus; pi: 0.17966; all/variant/polymorphic sites: 20244797/97302/48946; private alleles: 1800
-  mw: 10.047 samples per locus; pi: 0.20144; all/variant/polymorphic sites: 15532433/101150/62414; private alleles: 3827
-  nc: 10.379 samples per locus; pi: 0.20966; all/variant/polymorphic sites: 15593641/103102/66563; private alleles: 5388
-  or: 10.392 samples per locus; pi: 0.19816; all/variant/polymorphic sites: 14918843/101541/59292; private alleles: 3053
-Populations is done.
-
- 
-
-mid filtering:
-
-populations -P ./ -M ../historic_populations.txt --vcf -r 0.30 --min_maf 0.01 --write_random_snp -t 8
-Removed 242732 loci that did not pass sample/population constraints from 416460 loci.
-Kept 173728 loci, composed of 12100028 sites; 60629 of those sites were filtered, 91091 variant sites remained.
-    11947646 genomic sites, of which 150246 were covered by multiple loci (1.3%).
-Mean genotyped sites per locus: 69.65bp (stderr 0.00).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 12.391 samples per locus; pi: 0.16745; all/variant/polymorphic sites: 10485200/79413/53953; private alleles: 4418
-  hist: 6.7673 samples per locus; pi: 0.16979; all/variant/polymorphic sites: 10354693/20446/11287; private alleles: 1948
-  mv: 12.29 samples per locus; pi: 0.14624; all/variant/polymorphic sites: 9501521/74403/39154; private alleles: 1408
-  mw: 12.223 samples per locus; pi: 0.1662; all/variant/polymorphic sites: 10370645/79162/51538; private alleles: 3273
-  nc: 12.323 samples per locus; pi: 0.17553; all/variant/polymorphic sites: 10343134/83163/55866; private alleles: 4566
-  or: 12.398 samples per locus; pi: 0.16368; all/variant/polymorphic sites: 10030684/81463/49117; private alleles: 2667
-
- 
-
- 
-
-Aligning with bwa aln:
-https://github.com/lh3/bwa#type
-
-Illumina single-end reads shorter than ~70bp:
-
-cd /srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/processing/align/bwa_aln_alignment
 bwa_db=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/genome/bwa/stuv
 
-for sample in ABGYY ATB1 ATB11 ATB13 ATB14 ATB15 ATB16 ATB17 ATB18 ATB19 ATB3 ATB4 ATB6 ATB7 ATB8 ATB9 BPBB BPYY BRYY BYPP GYRR HIST11 HIST12 HIST15 HIST2 HIST3 HIST4 HIST5 HIST6 HIST8 HIST9 MONK1 MONK11 MONK13 MONK15 MONK17 MONK2 MONK20 MONK22 MONK25 MONK27 MONK28 MONK4 MONK5 MONK6 MONK7 NOR1 NOR10 NOR11 NOR12 NOR13 NOR14 NOR15 NOR16 NOR17 NOR18 NOR20 NOR3 NOR4 NOR8 NOR9 PPYY PRBB PRRR PYBB PYRR PYYY sv057 sv058 sv059 sv060 sv061 sv062 sv063 sv064 sv065 sv066 sv087 sv088 sv089 sv090 sv091 V10181 V10531 V10731A;
+<pre class="r"><code>
+for sample in cat sample_names.txt;
 do
 echo WORKING WITH ${sample}
 bwa aln -t 16 -B 5 $bwa_db ../../samples_batch/merged/${sample}.fq.gz > ${sample}.sai
 bwa samse $bwa_db ${sample}.sai ../../samples_batch/merged/${sample}.fq.gz > ${sample}.sam
 samtools view -bS ${sample}.sam | samtools sort -o ${sample}.bam
 done
+</code></pre>
+
 samtools flagstat ABGYY.bam
 samtools flagstat ATB1.bam
 b of 5:
@@ -189,12 +116,41 @@ samtools flagstat HIST9.bam
 HIST11: 146792/2349968=6.25% mapped
 HIST12:275346/3076038=8.95% mapped
 HIST8: 156867/2843194=5.52%% mapped
- 
 
-module load stacks/2.2 
+
+<h2>Calling variants with gstacks:</h2>
+
+<pre class="r"><code>
 gstacks -I ./ -M ../historic_populations.txt -O ./
 populations -P ./ -M ../historic_populations.txt --vcf
+</code></pre>
+
+Removed 0 loci that did not pass sample/population constraints from 412079 loci.
+Kept 412079 loci, composed of 28225204 sites; 20 of those sites were filtered, 243589 variant sites remained.
+    27345713 genomic sites, of which 846899 were covered by multiple loci (3.1%).
+Mean genotyped sites per locus: 68.47bp (stderr 0.00).
+
+Population summary statistics (more detail in populations.sumstats_summary.tsv):
+  aw: 11.272 samples per locus; pi: 0.17294; all/variant/polymorphic sites: 15515519/232371/142127; private alleles: 24046
+  hist: 4.8985 samples per locus; pi: 0.12483; all/variant/polymorphic sites: 18008520/91625/34830; private alleles: 13284
+  mv: 11.015 samples per locus; pi: 0.14832; all/variant/polymorphic sites: 19889591/226170/98305; private alleles: 4740
+  mw: 11.146 samples per locus; pi: 0.16776; all/variant/polymorphic sites: 15527851/232281/128802; private alleles: 13279
+  nc: 11.442 samples per locus; pi: 0.17365; all/variant/polymorphic sites: 15591084/235304/135530; private alleles: 16176
+  or: 11.45 samples per locus; pi: 0.16313; all/variant/polymorphic sites: 14915003/232899/117912; private alleles: 7942
+
+You can even do some preliminary filtering on Stacks, though I prefer the filtering options on VCFtools personally.
+
+<pre class="r"><code>
+populations -P ./ -M ../historic_populations.txt --vcf -r 0.50 --min_maf 0.01 --write_random_snp -t 8
+</code></pre>
+
+
  
+
+<pre class="r"><code>
+gstacks -I ./ -M ../historic_populations.txt -O ./
+populations -P ./ -M ../historic_populations.txt --vcf
+ </code></pre>
 
 Removed 0 loci that did not pass sample/population constraints from 415346 loci.
 Kept 415346 loci, composed of 26722792 sites; 29 of those sites were filtered, 242682 variant sites remained.
@@ -212,78 +168,15 @@ Populations is done.
 
  
 
- 
 
-Calling SNPS with filtering:
-Strict filtering:
-
-populations -P ./ -M ../historic_populations.txt --vcf -r 0.50 --min_maf 0.01 --write_random_snp -t 8
-Removed 272960 loci that did not pass sample/population constraints from 415346 loci.
-Kept 142386 loci, composed of 9215837 sites; 65847 of those sites were filtered, 75485 variant sites remained.
-    9139366 genomic sites, of which 70462 were covered by multiple loci (0.8%).
-Mean genotyped sites per locus: 64.72bp (stderr 0.00).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 13.385 samples per locus; pi: 0.1581; all/variant/polymorphic sites: 8312464/66482/45995; private alleles: 3589
-  hist: 7.8898 samples per locus; pi: 0.15151; all/variant/polymorphic sites: 6999644/12969/7498; private alleles: 1484
-  mv: 13.345 samples per locus; pi: 0.14289; all/variant/polymorphic sites: 7022738/61475/33191; private alleles: 1052
-  mw: 13.265 samples per locus; pi: 0.15851; all/variant/polymorphic sites: 8120833/65611/43631; private alleles: 2683
-  nc: 13.336 samples per locus; pi: 0.16368; all/variant/polymorphic sites: 7993470/69360/46969; private alleles: 3696
-  or: 13.394 samples per locus; pi: 0.15513; all/variant/polymorphic sites: 7877829/68163/41584; private alleles: 2129
-Populations is done.
-
-lenient filtering:
-
-populations -P ./ -M ../historic_populations.txt --vcf --min_maf 0.01 --write_random_snp -t 8
-Removed 0 loci that did not pass sample/population constraints from 415346 loci.
-Kept 415346 loci, composed of 26722792 sites; 39995 of those sites were filtered, 107561 variant sites remained.
-    24592952 genomic sites, of which 1780173 were covered by multiple loci (7.2%).
-Mean genotyped sites per locus: 64.33bp (stderr 0.00).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 10.028 samples per locus; pi: 0.20536; all/variant/polymorphic sites: 14708443/100640/64193; private alleles: 5414
-  hist: 4.2583 samples per locus; pi: 0.15146; all/variant/polymorphic sites: 16104957/32828/12171; private alleles: 3377
-  mv: 9.7637 samples per locus; pi: 0.18003; all/variant/polymorphic sites: 18119953/96664/48182; private alleles: 1791
-  mw: 9.9017 samples per locus; pi: 0.20159; all/variant/polymorphic sites: 14711609/100408/61356; private alleles: 3862
-  nc: 10.238 samples per locus; pi: 0.20998; all/variant/polymorphic sites: 14794677/102375/65561; private alleles: 5512
-  or: 10.248 samples per locus; pi: 0.19904; all/variant/polymorphic sites: 14148468/100835/58591; private alleles: 3145
-Populations is done.
-
- 
-
-mid filtering:
-
-populations -P ./ -M ../historic_populations.txt --vcf -r 0.30 --min_maf 0.01 --write_random_snp -t 8
-Removed 244064 loci that did not pass sample/population constraints from 415346 loci.
-Kept 171282 loci, composed of 11070243 sites; 58528 of those sites were filtered, 89015 variant sites remained.
-    10933716 genomic sites, of which 126562 were covered by multiple loci (1.2%).
-Mean genotyped sites per locus: 64.63bp (stderr 0.00).
-
-Population summary statistics (more detail in populations.sumstats_summary.tsv):
-  aw: 12.298 samples per locus; pi: 0.16771; all/variant/polymorphic sites: 9613384/77796/52617; private alleles: 4382
-  hist: 6.6219 samples per locus; pi: 0.15842; all/variant/polymorphic sites: 9379639/18103/9472; private alleles: 1892
-  mv: 12.195 samples per locus; pi: 0.14685; all/variant/polymorphic sites: 8682424/72833/38252; private alleles: 1459
-  mw: 12.131 samples per locus; pi: 0.16676; all/variant/polymorphic sites: 9510690/77565/50254; private alleles: 3271
-  nc: 12.234 samples per locus; pi: 0.17594; all/variant/polymorphic sites: 9476561/81578/54547; private alleles: 4600
-  or: 12.319 samples per locus; pi: 0.16407; all/variant/polymorphic sites: 9198872/79815/47971; private alleles: 2686
-Populations is done.
-
- 
-
- 
-
- 
-
-Bowtie + GATK
-IF I RERUN REDO BAM FILES THEY WERE COPIED OVR BY BWA
-
-https://www.biostars.org/p/81924/
+<h2>Bowtie + GATK</h2>
 
 Create a Bowtie genome database:
 
-module load bowtie/2.3.5.1
-cd /srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/genome
+<pre class="r"><code>
 bowtie2-build -f Sturnus_vulgaris_2.3.1.simp.fasta Sturnus_vulgaris_2.3.1.simp
+</code></pre>
+
 And GATK
 
 module load java/8u121
@@ -293,10 +186,8 @@ java -Xmx10g -jar /apps/picard/2.18.26/picard.jar CreateSequenceDictionary R=Stu
 samtools faidx Sturnus_vulgaris_2.3.1.simp.fasta
  
 
-module load gatk/4.1.0.0
-cd /srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/processing/align/bowtie_GATK_alignment
-export _JAVA_OPTIONS="-Xmx128g"
-for i in ABGYY ATB1 ATB11 ATB13 ATB14 ATB15 ATB16 ATB17 ATB18 ATB19 ATB3 ATB4 ATB6 ATB7 ATB8 ATB9 BPBB BPYY BRYY BYPP GYRR HIST11 HIST12 HIST15 HIST2 HIST3 HIST4 HIST5 HIST6 HIST8 HIST9 MONK1 MONK11 MONK13 MONK15 MONK17 MONK2 MONK20 MONK22 MONK25 MONK27 MONK28 MONK4 MONK5 MONK6 MONK7 NOR1 NOR10 NOR11 NOR12 NOR13 NOR14 NOR15 NOR16 NOR17 NOR18 NOR20 NOR3 NOR4 NOR8 NOR9 PPYY PRBB PRRR PYBB PYRR PYYY sv057 sv058 sv059 sv060 sv061 sv062 sv063 sv064 sv065 sv066 sv087 sv088 sv089 sv090 sv091 V10181 V10531 V10731A;
+<pre class="r"><code>
+for i in cat sample_names.txt;
 do
 echo working with $i;
 GENOME=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/genome/Sturnus_vulgaris_2.3.1.simp
@@ -307,8 +198,9 @@ java -Xmx128g -jar /apps/picard/2.18.26/picard.jar MarkDuplicates INPUT="$i".bam
 java -Xmx48g -jar /apps/picard/2.18.26/picard.jar BuildBamIndex I="$i"_mark.bam
 gatk --java-options "-Xmx120G" HaplotypeCaller -R ${GENOME}.fasta -I ${i}_mark.bam -O ${i}.g.vcf -ERC GVCF --native-pair-hmm-threads 16;
 done
- 
+ </code></pre>
 
+<pre class="r"><code>
 GENOME=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/genome/Sturnus_vulgaris_2.3.1.simp.fasta
 gatk --java-options "-Xmx120G" CombineGVCFs \
 --reference $GENOME \
@@ -398,42 +290,14 @@ gatk --java-options "-Xmx120G" CombineGVCFs \
 --variant V10531.g.vcf \
 --variant V10731A.g.vcf \
 --output historical_GATK_variantscombined.vcf
- 
+ </code></pre>
+
 
 gatk --java-options "-Xmx120g" GenotypeGVCFs \
 -R $GENOME \
 -V historical_GATK_variantscombined.vcf \
 -O historical_GATK_variantsgenotyped.vcf
- 
-
-Only Hist:
-
-GENOME=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/genome/Sturnus_vulgaris_2.3.1.simp.fasta
-gatk --java-options "-Xmx120G" CombineGVCFs \
---reference $GENOME \
---variant HIST11.g.vcf \
---variant HIST12.g.vcf \
---variant HIST15.g.vcf \
---variant HIST2.g.vcf \
---variant HIST3.g.vcf \
---variant HIST4.g.vcf \
---variant HIST5.g.vcf \
---variant HIST6.g.vcf \
---variant HIST8.g.vcf \
---variant HIST9.g.vcf \
---output historical_GATK_variantscombined_histonly.vcf
- 
-
-gatk --java-options "-Xmx120g" GenotypeGVCFs \
--R $GENOME \
--V historical_GATK_variantscombined_histonly.vcf \
--O historical_GATK_variantsgenotyped_histonly.vcf
-
- 
-
- 
-
- 
+ </code></pre>
 
  
 
