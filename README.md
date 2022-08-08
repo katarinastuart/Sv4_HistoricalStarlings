@@ -1,5 +1,9 @@
 # Sv4_HistoricalStarlings
-Scripts and notes related to manuscript entitled "Historical museum samples enable the examination of divergent and parallel evolution during invasion"
+Scripts and notes related to manuscript:
+
+Stuart KC, Sherwin WB, Austin JJ, Bateson M, Eens M, Brandley MC, Rollins LA **2022.** Historical museum samples enable the examination of divergent and parallel evolution during invasion. *Molecular Ecology*, 31(1): 1836-1852, [doi.org/10.1111/mec.16353](doi.org/10.1111/mec.16353)
+
+This includes:
 
 2021_11_20_notebook_10049: PopGen analysis
 
