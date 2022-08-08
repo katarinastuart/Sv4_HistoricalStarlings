@@ -50,7 +50,7 @@ module load gatk/4.1.0.0
 OUTPUT_DIR=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/processing/samples_batch
 BARCODE_DIR=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/processing/barcodes
 
-process_radtags -p ${RAW_DIR}/batch_$i/ -o ${OUTPUT_DIR}/batch_$i/ -b ${BARCODE_DIR}/bardcode_named_$i.txt -r -c -q --renz_1 pstI --renz_2 sphI
+process_radtags -p ${RAW_DIR}/ -o ${OUTPUT_DIR}/ -b ${BARCODE_DIR}/bardcode_named.txt -r -c -q --renz_1 pstI --renz_2 sphI
 </code></pre>
 
 
