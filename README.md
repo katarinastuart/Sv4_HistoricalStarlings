@@ -9,7 +9,7 @@ This page contains small vignette's on the following
 <li>DArTseq SNP variant calling</li>
 
 
-<h1> SNP variant calling for raw RRS (DArTseq) data</h1>
+<h2> SNP variant calling for raw RRS (DArTseq) data</h2>
 
 The following is a summary of some SNP calling pipelines that I have used to process raw DArTseq data, but they may be applied to other types of reduced representation sequencing (RRS) raw data.
 
@@ -25,7 +25,7 @@ For the first two steps of the process, you can mix and match mapping and varian
 
 Ulitmately I used BWA aln as my mapping software of choice, as this is [recommended](https://github.com/lh3/bwa#type) for Illumina single-end reads shorter than ~70bp, which is good for DArT-seq.
 
-<h3>Software</h3>
+## Software
 
 Below is a list of the modules used (and versions).
 
@@ -40,7 +40,7 @@ module load gatk/4.1.0.0
 </code></pre>
 
 
-<h3>Data cleaning: Stacks </h3>
+## Data cleaning: Stacks
 
 <pre class="r"><code>RAW_DIR=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/rawdata/batch2_split
 OUTPUT_DIR=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/processing/samples_batch
@@ -58,7 +58,7 @@ Count reads:
 <pre class="r"><code>zcat *.fq.gz | echo $((`wc -l`/4))
 </code></pre>
 
-<h2>Mapping: BWA aln and mem</h2>
+## Mapping: BWA aln and mem
 
 Place your genome somewhere sensible and index it for BWA.
 
@@ -86,7 +86,7 @@ Check reads mapped successfully:
 samtools flagstat SAMPLENAME.bam #sub out SAMPLENAME with a few sample names
 </code></pre>
 
-<h3>Aligning with bwa aln</h3>
+## Aligning with bwa aln
 
 <pre class="r"><code>for sample in cat sample_names.txt;
 do
@@ -118,7 +118,7 @@ HIST12:275346/3076038=8.95% mapped<br>
 HIST8: 156867/2843194=5.52%% mapped<br></i>
 
 
-<h2>Variant Calling: gstacks</h2>
+## Variant Calling: gstacks
 
 For BWA mem and aln, the output is a [BAM](https://en.wikipedia.org/wiki/Binary_Alignment_Map) file. Next, I called variants using gstacks. This is not a necessity; once you have the BAM files you can use different variant calling methods.
 
@@ -153,7 +153,7 @@ You can even do some preliminary filtering on Stacks:
 Though I prefer the filtering options on VCFtools personally, as there are more options. The flag 'write_random_snp' or 'write-single-snp' is useful to run here through as it keep only one SNP per locus.
  
 
-<h2>Alternate mapping and variant calling process: Bowtie + GATK</h2>
+## Alternate mapping and variant calling process: Bowtie + GATK
 
 You will find that this process has very similar steps to the above BWA and Stacks processes. The overall workflow of SNP variant calling is usually quite similar.
 
