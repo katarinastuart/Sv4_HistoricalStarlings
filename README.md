@@ -64,7 +64,7 @@ Count reads:
 
 ## Mapping: BWA aln and mem
 
-Place your genome somewhere sensible and index it for BWA.
+Place your genome somewhere sensible and index it for BWA. Note that I've put my index files into a folder called bwa, and have given them a prefix (-p). '&> bwa/bwa_index.oe' allows me to keep a record of the output/error messages.
 
 <pre class="r"><code>genome_fa=Sturnus_vulgaris_2.3.1.simp.fasta
 bwa index -p bwa/stuv $genome_fa &> bwa/bwa_index.oe
