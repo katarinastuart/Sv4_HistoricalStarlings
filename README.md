@@ -211,3 +211,10 @@ GATK doesn't produce any summaries like populations, however we can make a quick
 
 <pre class="r">grep -v "#" historical_BWAmem_GATK_variantsgenotyped.vcf | wc -l
 </code></pre>
+
+## Closing remarks
+
+Below is a summary of the number of variants I obtained at the end of the above pipeline, both without filtering and with some filtering. Note that the low number of SNPs called by the bowtie-GATK combo was not a result of mapping (bowtie produced high read mapping percentages). This leaves me to believe that GATK didn't do very well with the DArT-seq data, which is a bit strange as I have seen it used quite successfully on many reduced representation data sets. Most of my new projects work with WGS so I have not investigated this further, but will leave this result here in case another finds similar results in their own work and needs perepctive. 
+
+![ScreenShot](/Sv4_vignette/Variants_summary_table.png)
+
