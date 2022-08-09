@@ -13,9 +13,9 @@ This page contains small vignette's on the following
 <li>DArTseq SNP variant calling</li>
 
 
-<h2> SNP variant calling for raw RRS (DArTseq) data</h2>
+<h2> SNP variant calling for raw RRS (DArTseq) data (with reference)</h2>
 
-The following is a summary of some SNP calling pipelines that I have used to process raw DArTseq data, but they may be applied to other types of reduced representation sequencing (RRS) raw data.
+The following is a summary of some SNP calling pipelines that I have used to process raw DArTseq data, but they may be applied to other types of reduced representation sequencing (RRS) raw data (alongside a reference genome).
 
 Variant calling falls into a few primary steps:
 <li>Mapping raw reads to a reference genome (or for refernce free variant calling forming the pseudogenome and calling references to this)</li>
@@ -72,8 +72,8 @@ bwa_db=/srv/scratch/z5188231/KStuart.Starling-Aug18/Sv4_Historic/genome/bwa/stuv
 </code></pre>
 
 <h3>Aligning with bwa mem</h3>
-Here I have my sample names as a list within the file 'sample_names.txt'.
-Aligning with bwa mem:
+Here I have my sample names as a list within the file 'sample_names.txt'. We are working with single-end reads, so provide just one fastq file. If this was paired-end reduced representation or whole genome sequencing, we could provide a second R2 fastq file.
+
 <pre class="r"><code>for i in cat sample_names.txt;
 do
 sample=$i
@@ -86,11 +86,12 @@ done
 </code></pre>
 
 Check reads mapped successfully: 
-<pre class="r"><code>
-samtools flagstat SAMPLENAME.bam #sub out SAMPLENAME with a few sample names
+<pre class="r"><code>samtools flagstat SAMPLENAME.bam #sub out SAMPLENAME with a few sample names
 </code></pre>
 
-## Aligning with bwa aln
+<h3> Aligning with bwa aln</h3>
+
+Aligning with bwa aln is very similar. Note that in the above example I pipe the sam file straight into a sorted bam file, where as here I don't. It doesn't make too much of a difference when you are working on small data files, but when working on whole genome data moving the data into bam form straight away saves a lot of space.
 
 <pre class="r"><code>for sample in cat sample_names.txt;
 do
